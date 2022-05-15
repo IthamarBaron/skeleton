@@ -1,0 +1,88 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+
+public class Raycast : MonoBehaviour
+{
+    [SerializeField] LayerMask layerMask;
+    [SerializeField] LayerMask dickButton;
+    [SerializeField] ParticleSystem pressPartical = null;
+    public AudioSource clickSFX;
+    public AudioSource boneCrackSFX;
+    public AudioSource evilLaughSFX;
+
+    //ESG
+    public GameObject dick;
+    //vars
+    System.Random rnd = new System.Random();
+    byte boneNumber = 0;
+    
+
+    //Bones
+    public GameObject bone0;
+    public GameObject bone1;
+    public GameObject bone2;
+    public GameObject bone3;
+    byte lastBone = 0;
+
+    float xLastBonePos = 0.15f;
+    float yLastBonePos = 15.9f;
+    float zLastBonePos = 17.2f;
+
+    //text
+    public GameObject TextBone0;
+    public GameObject TextBone1;
+    public GameObject TextBone2;
+    public GameObject TextBone3;
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        //bones array
+        GameObject[] bones = { bone0, bone1, bone2, bone3,};
+        //text array
+        GameObject[] Textbones = { TextBone0, TextBone1, TextBone2, TextBone3};
+
+
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit hitinfo, 3f,layerMask)&&Input.GetKeyDown(KeyCode.E))
+        {
+            //returning last TEXT fo the matching bone to its original loctation
+            Textbones[boneNumber].transform.position = new Vector3(610, -1227, -1554);
+            //returning last bone to it's original location
+            bones[boneNumber].transform.position = new Vector3(xLastBonePos, yLastBonePos, zLastBonePos);
+
+            //effects
+            pressPartical.Play();
+            clickSFX.Play();
+            //<Bone Stuff>
+            //making sure u dont get the same bone twice
+            lastBone = boneNumber;
+            boneNumber = (byte)rnd.Next(0, 4);
+            if (lastBone == boneNumber)
+            {
+                boneNumber = (byte)rnd.Next(0, 4);
+
+            }
+            //saving last bone possition
+            xLastBonePos = bones[boneNumber].transform.position.x;
+            yLastBonePos = bones[boneNumber].transform.position.y;
+            zLastBonePos = bones[boneNumber].transform.position.z;
+            //displaying the bone
+            bones[boneNumber].transform.position = new Vector3(0.01f, 11.46f, 7.51f);
+            boneCrackSFX.Play();
+            //<ALL TEXT>
+
+            Textbones[boneNumber].transform.position = new Vector3(10.34f, 20.76f, 9.76f);
+
+        }
+
+        //<EASTER EGG>
+        if ((Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out RaycastHit hit, 5f, dickButton) && Input.GetKeyDown(KeyCode.E)))
+        {
+            evilLaughSFX.Play();
+            dick.transform.position = new Vector3(-0.174f, 12.91f, 17.138f);    
+        }
+    }
+}
